@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini API Cost Calculator - Estimate Your Google AI API Spending (2026)</title>
+    <meta name="description" content="Free Gemini API cost calculator. Compare pricing for Gemini 3.5 Flash, 2.5 Pro, 2.5 Flash, and all Google AI models. Estimate monthly API costs vs OpenAI and Anthropic.">
+    <meta name="keywords" content="Gemini API pricing, Gemini 3.5 Flash cost, Google AI API calculator, Gemini token cost, LLM cost comparison, Gemini vs GPT pricing">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://gemini-cost-calculator.vercel.app/">
+    <meta property="og:title" content="Gemini API Cost Calculator (2026)">
+    <meta property="og:description" content="Calculate and compare Gemini API costs. Covers Gemini 3.5 Flash, 2.5 Pro, and all Google AI models.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); }
+        .card-glow { box-shadow: 0 0 20px rgba(66, 133, 244, 0.1); }
+        .card-glow:hover { box-shadow: 0 0 30px rgba(66, 133, 244, 0.2); }
+        .highlight-bar { background: linear-gradient(90deg, #4285f4, #34a853, #fbbc05, #ea4335); }
+        input[type="number"]::-webkit-inner-spin-button { opacity: 1; }
+        .comparison-row:hover { background: rgba(66, 133, 244, 0.05); }
+        .tab-active { border-bottom: 3px solid #4285f4; color: #4285f4; font-weight: 600; }
+        .tab-inactive { border-bottom: 3px solid transparent; color: #6b7280; }
+        .model-tag { font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; }
+        .tier-standard { background: #e8f0fe; color: #1967d2; }
+        .tier-batch { background: #e6f4ea; color: #137333; }
+        .tier-priority { background: #fce8e6; color: #c5221f; }
+        .tier-free { background: #f1f3f4; color: #5f6368; }
+        .savings-badge { background: linear-gradient(135deg, #34a853, #0f9d58); color: white; }
+        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+        .faq-answer.open { max-height: 500px; }
+        .faq-chevron { transition: transform 0.3s ease; }
+        .faq-chevron.open { transform: rotate(180deg); }
+    </style>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Gemini API Cost Calculator",
+        "description": "Free tool to calculate and compare Gemini API costs across all Google AI models",
+        "url": "https://gemini-cost-calculator.vercel.app/",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Any",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white">
+        <div class="max-w-6xl mx-auto px-4 py-8">
+            <div class="flex justify-between items-center">
+                <div>
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-xl">💎</div>
+                        <h1 class="text-2xl md:text-3xl font-bold">Gemini API Cost Calculator</h1>
+                    </div>
+                    <p class="text-blue-200 text-sm" data-i18n="subtitle">Estimate your Google AI API spending — covers Gemini 3.5 Flash, 2.5 Pro, and all models</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="toggleLang()" id="langBtn" class="px-3 py-1.5 text-sm bg-white/10 hover:bg-white/20 rounded-lg transition">中文</button>
+                </div>
+            </div>
+            <div class="mt-3 flex items-center gap-2 text-xs text-blue-300">
+                <span>📊</span>
+                <span data-i18n="updated">Pricing updated: May 19, 2026</span>
+                <span class="mx-2">•</span>
+                <span>Source: ai.google.dev</span>
+            </div>
+        </div>
+        <div class="highlight-bar h-1"></div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-4 py-8">
+
+        <!-- Calculator Section -->
+        <div class="grid lg:grid-cols-3 gap-6 mb-10">
+
+            <!-- Input Panel -->
+            <div class="lg:col-span-1 space-y-5">
+                <div class="bg-white rounded-2xl p-6 card-glow">
+                    <h2 class="text-lg font-bold text-gray-800 mb-4" data-i18n="calcTitle">💰 Cost Calculator</h2>
+
+                    <!-- Model Select -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-600 mb-1" data-i18n="selectModel">Select Model</label>
+                        <select id="modelSelect" onchange="calculate()" class="w-full p-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none">
+                            <optgroup label="— Latest Models —">
+                                <option value="gemini-3.5-flash" selected>Gemini 3.5 Flash ⭐</option>
+                                <option value="gemini-3.1-pro">Gemini 3.1 Pro Preview</option>
+                                <option value="gemini-3.1-flash-lite">Gemini 3.1 Flash-Lite</option>
+                                <option value="gemini-3-flash">Gemini 3 Flash Preview</option>
+                            </optgroup>
+                            <optgroup label="— Gemini 2.5 Series —">
+                                <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+                                <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+                                <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash-Lite</option>
+                            </optgroup>
+                            <optgroup label="— Embedding —">
+                                <option value="gemini-embedding-2">Gemini Embedding 2</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <!-- Tier Select -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-600 mb-1" data-i18n="selectTier">Pricing Tier</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="setTier('standard')" id="tier-standard" class="tier-btn p-2 text-xs rounded-lg border-2 border-blue-500 bg-blue-50 text-blue-700 font-semibold">Standard</button>
+                            <button onclick="setTier('batch')" id="tier-batch" class="tier-btn p-2 text-xs rounded-lg border-2 border-gray-200 text-gray-600 hover:border-green-300">Batch (50% off)</button>
+                            <button onclick="setTier('priority')" id="tier-priority" class="tier-btn p-2 text-xs rounded-lg border-2 border-gray-200 text-gray-600 hover:border-red-300">Priority (1.8x)</button>
+                        </div>
+                    </div>
+
+                    <!-- Input Tokens -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-600 mb-1" data-i18n="inputTokens">Input Tokens (per request)</label>
+                        <input type="number" id="inputTokens" value="1000" min="0" onchange="calculate()" oninput="calculate()" class="w-full p-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none">
+                        <div class="flex gap-1.5 mt-1.5">
+                            <button onclick="setTokens('input',500)" class="text-xs px-2 py-0.5 bg-gray-100 hover:bg-gray-200 rounded text-gray-500">500</button>
+                            <button onclick="setTokens('input',1000)" class="text-xs px-2 py-0.5 bg-gray-100 hover:bg-gray-200 rounded text-gray-500">1K</button>
+                            <button onclick="setTokens('input',5000)" class="text-xs px-2 py-0.5 bg-gray-100 hover:bg-gray-200 rounded text-gray-500">5K</button>
+                            <button onclick="setTokens('input',50000)" class="text-xs px-2 py-0.5 bg-gray-100 hover:bg-gray-200 rounded text-gray-500">50K</button>
+                            <button onclick="setTokens('input',200000)" class="text-xs px-2 py-0.5 bg-gray-100 hover:bg-gray-200 rounded text-gray-500">200K</button>
+                        </div>
+                    </div>
+
+                    <!-- Output Tokens -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-600 mb-1" data-i18n="outputTokens">Output Tokens (per request)</label>
+                        <input type="number" id="outputTokens" value="500" min="0" onchange="calculate()" oninput="calculate()" class="w-full p-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none">
+                        <div class="flex gap-1.5 mt-1.5">
+                            <button onclick="setTokens('output',100)" class="text-xs px-2 py-0.5 bg-gray-100 hover:bg-gray-200 rounded text-gray-500">100</button>
+                            <button onclick="setTokens('output',500)" class="text-xs px-2 py-0.5 bg-gray-100 hover:bg-gray-200 rounded text-gray-500">500</button>
+                            <button onclick="setTokens('output',1000)" class="text-xs px-2 py-0.5 bg-gray-100 hover:bg-gray-200 rounded text-gray-500">1K</button>
+                            <button onclick="setTokens('output',4000)" class="text-xs px-2 py-0.5 bg-gray-100 hover:bg-gray-200 rounded text-gray-500">4K</button>
+                            <button onclick="setTokens('output',8192)" class="text-xs px-2 py-0.5 bg-gray-100 hover:bg-gray-200 rounded text-gray-500">8K</button>
+                        </div>
+                    </div>
+
+                    <!-- Requests per month -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-600 mb-1" data-i18n="requests">Requests per Month</label>
+                        <input type="number" id="requests" value="100000" min="1" onchange="calculate()" oninput="calculate()" class="w-full p-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none">
+                        <div class="flex gap-1.5 mt-1.5">
+                            <button onclick="setReqs(1000)" class="text-xs px-2 py-0.5 bg-gray-100 hover:bg-gray-200 rounded text-gray-500">1K</button>
+                            <button onclick="setReqs(10000)" class="text-xs px-2 py-0.5 bg-gray-100 hover:bg-gray-200 rounded text-gray-500">10K</button>
+                            <button onclick="setReqs(100000)" class="text-xs px-2 py-0.5 bg-gray-100 hover:bg-gray-200 rounded text-gray-500">100K</button>
+                            <button onclick="setReqs(1000000)" class="text-xs px-2 py-0.5 bg-gray-100 hover:bg-gray-200 rounded text-gray-500">1M</button>
+                            <button onclick="setReqs(10000000)" class="text-xs px-2 py-0.5 bg-gray-100 hover:bg-gray-200 rounded text-gray-500">10M</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Panel -->
+            <div class="lg:col-span-2 space-y-5">
+                <!-- Cost Result Card -->
+                <div class="bg-white rounded-2xl p-6 card-glow">
+                    <div class="grid md:grid-cols-3 gap-4 mb-6">
+                        <div class="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
+                            <div class="text-sm text-blue-600 mb-1" data-i18n="monthlyCost">Monthly Cost</div>
+                            <div id="monthlyCost" class="text-3xl font-bold text-blue-700">$0.00</div>
+                            <div id="monthlyCostDetail" class="text-xs text-blue-400 mt-1"></div>
+                        </div>
+                        <div class="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-xl">
+                            <div class="text-sm text-green-600 mb-1" data-i18n="perRequestCost">Cost per Request</div>
+                            <div id="perRequest" class="text-3xl font-bold text-green-700">$0.00</div>
+                        </div>
+                        <div class="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl">
+                            <div class="text-sm text-purple-600 mb-1" data-i18n="totalTokens">Total Tokens/Month</div>
+                            <div id="totalTokens" class="text-3xl font-bold text-purple-700">0</div>
+                            <div id="totalTokensDetail" class="text-xs text-purple-400 mt-1"></div>
+                        </div>
+                    </div>
+
+                    <!-- Model Info -->
+                    <div class="p-4 bg-gray-50 rounded-xl">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 id="modelName" class="font-semibold text-gray-800">Gemini 3.5 Flash</h3>
+                            <span id="modelTags" class="flex gap-1"></span>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                            <div>
+                                <span class="text-gray-500" data-i18n="inputPrice">Input Price</span>
+                                <div id="inputPrice" class="font-semibold text-gray-800">$1.50/M</div>
+                            </div>
+                            <div>
+                                <span class="text-gray-500" data-i18n="outputPrice">Output Price</span>
+                                <div id="outputPrice" class="font-semibold text-gray-800">$9.00/M</div>
+                            </div>
+                            <div>
+                                <span class="text-gray-500" data-i18n="contextWindow">Context Window</span>
+                                <div id="contextWindow" class="font-semibold text-gray-800">1M</div>
+                            </div>
+                            <div>
+                                <span class="text-gray-500" data-i18n="freeTier">Free Tier</span>
+                                <div id="freeTierInfo" class="font-semibold text-green-600" data-i18n="yes">✅ Yes</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cost Breakdown -->
+                <div class="bg-white rounded-2xl p-6 card-glow">
+                    <h3 class="font-bold text-gray-800 mb-4" data-i18n="costBreakdown">📊 Cost Breakdown</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600" data-i18n="inputCost">Input Token Cost</span>
+                            <span id="inputCostVal" class="font-semibold">$0.00</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-3">
+                            <div id="inputBar" class="bg-blue-500 h-3 rounded-full transition-all" style="width:0%"></div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600" data-i18n="outputCost">Output Token Cost</span>
+                            <span id="outputCostVal" class="font-semibold">$0.00</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-3">
+                            <div id="outputBar" class="bg-green-500 h-3 rounded-full transition-all" style="width:0%"></div>
+                        </div>
+                        <hr class="my-2">
+                        <div class="flex justify-between items-center text-lg">
+                            <span class="font-bold" data-i18n="totalMonthly">Total Monthly</span>
+                            <span id="totalMonthly" class="font-bold text-blue-700">$0.00</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-500" data-i18n="annualCost">Annual Cost</span>
+                            <span id="annualCost" class="font-semibold text-gray-700">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Free Tier Info -->
+                <div id="freeTierCard" class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-2xl p-6">
+                    <h3 class="font-bold text-amber-800 mb-2">🎯 <span data-i18n="freeTierTip">Free Tier Tip</span></h3>
+                    <p id="freeTierText" class="text-sm text-amber-700" data-i18n="freeTierDesc">This model has a free tier! You might not need to pay at all. Check the free tier limits above and compare with your usage.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison Section -->
+        <div class="bg-white rounded-2xl p-6 card-glow mb-10">
+            <h2 class="text-xl font-bold text-gray-800 mb-2" data-i18n="comparisonTitle">⚡ Cross-Provider Price Comparison</h2>
+            <p class="text-sm text-gray-500 mb-4" data-i18n="comparisonDesc">Compare costs for the same workload across different AI providers</p>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-gray-200">
+                            <th class="text-left py-3 px-2 font-semibold text-gray-600" data-i18n="provider">Provider</th>
+                            <th class="text-left py-3 px-2 font-semibold text-gray-600" data-i18n="model">Model</th>
+                            <th class="text-right py-3 px-2 font-semibold text-gray-600">Input $/M</th>
+                            <th class="text-right py-3 px-2 font-semibold text-gray-600">Output $/M</th>
+                            <th class="text-right py-3 px-2 font-semibold text-gray-600" data-i18n="monthlyCol">Monthly Cost</th>
+                            <th class="text-right py-3 px-2 font-semibold text-gray-600" data-i18n="savingsCol">Savings</th>
+                        </tr>
+                    </thead>
+                    <tbody id="comparisonBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Full Pricing Table -->
+        <div class="bg-white rounded-2xl p-6 card-glow mb-10">
+            <h2 class="text-xl font-bold text-gray-800 mb-2" data-i18n="fullPricingTitle">📋 Full Gemini Pricing Table (2026)</h2>
+            <p class="text-sm text-gray-500 mb-4" data-i18n="fullPricingDesc">Standard pricing for all Gemini models. Prices per million tokens (USD).</p>
+
+            <!-- Tabs -->
+            <div class="flex gap-4 mb-4 border-b border-gray-100">
+                <button onclick="switchPricingTab('text')" id="tab-text" class="tab-active pb-2 text-sm" data-i18n="tabText">Text/Multimodal</button>
+                <button onclick="switchPricingTab('image')" id="tab-image" class="tab-inactive pb-2 text-sm" data-i18n="tabImage">Image Generation</button>
+                <button onclick="switchPricingTab('audio')" id="tab-audio" class="tab-inactive pb-2 text-sm" data-i18n="tabAudio">Audio/TTS</button>
+                <button onclick="switchPricingTab('embedding')" id="tab-embedding" class="tab-inactive pb-2 text-sm" data-i18n="tabEmbedding">Embedding</button>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs">
+                    <thead>
+                        <tr class="border-b-2 border-gray-200">
+                            <th class="text-left py-2 px-2 font-semibold text-gray-600" data-i18n="tblModel">Model</th>
+                            <th class="text-right py-2 px-2 font-semibold text-gray-600">Std Input</th>
+                            <th class="text-right py-2 px-2 font-semibold text-gray-600">Std Output</th>
+                            <th class="text-right py-2 px-2 font-semibold text-gray-600">Batch Input</th>
+                            <th class="text-right py-2 px-2 font-semibold text-gray-600">Batch Output</th>
+                            <th class="text-center py-2 px-2 font-semibold text-gray-600">Free</th>
+                            <th class="text-center py-2 px-2 font-semibold text-gray-600">Context</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pricingTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="bg-white rounded-2xl p-6 card-glow mb-10">
+            <h2 class="text-xl font-bold text-gray-800 mb-6" data-i18n="faqTitle">❓ Frequently Asked Questions</h2>
+            <div class="space-y-3" id="faqContainer"></div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-400 py-8">
+        <div class="max-w-6xl mx-auto px-4 text-center text-sm">
+            <p>Gemini API Cost Calculator — Built for developers 💙</p>
+            <p class="mt-1">Pricing source: <a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" class="text-blue-400 hover:underline">Google AI Developer Docs</a> (Updated May 19, 2026)</p>
+            <p class="mt-1 text-gray-500">Not affiliated with Google. Prices shown are for reference only.</p>
+        </div>
+    </footer>
+
+    <script>
+    // ==================== DATA ====================
+    const MODELS = {
+        'gemini-3.5-flash': {
+            name: 'Gemini 3.5 Flash',
+            tags: ['NEW', 'FLAGSHIP'],
+            tagColors: ['bg-red-100 text-red-700', 'bg-blue-100 text-blue-700'],
+            standard: { input: 1.50, output: 9.00 },
+            batch: { input: 0.75, output: 4.50 },
+            priority: { input: 2.70, output: 16.20 },
+            context: '1M',
+            free: true,
+            cache: { read: 0.15, store: 1.00 }
+        },
+        'gemini-3.1-pro': {
+            name: 'Gemini 3.1 Pro Preview',
+            tags: ['PREVIEW'],
+            tagColors: ['bg-purple-100 text-purple-700'],
+            standard: { input: 2.00, output: 12.00 },
+            batch: { input: 1.00, output: 6.00 },
+            priority: { input: 3.60, output: 21.60 },
+            context: '1M',
+            free: false,
+            cache: { read: 0.20, store: 4.50 },
+            note: 'Input >200K: $4.00/$18.00'
+        },
+        'gemini-3-flash': {
+            name: 'Gemini 3 Flash Preview',
+            tags: ['PREVIEW'],
+            tagColors: ['bg-purple-100 text-purple-700'],
+            standard: { input: 0.50, output: 3.00 },
+            batch: { input: 0.25, output: 1.50 },
+            priority: { input: 0.90, output: 5.40 },
+            context: '1M',
+            free: true,
+            cache: { read: 0.05, store: 1.00 }
+        },
+        'gemini-3.1-flash-lite': {
+            name: 'Gemini 3.1 Flash-Lite',
+            tags: ['CHEAPEST'],
+            tagColors: ['bg-green-100 text-green-700'],
+            standard: { input: 0.25, output: 1.50 },
+            batch: { input: 0.125, output: 0.75 },
+            priority: { input: 0.45, output: 2.70 },
+            context: '1M',
+            free: true,
+            cache: { read: 0.025, store: 1.00 }
+        },
+        'gemini-2.5-pro': {
+            name: 'Gemini 2.5 Pro',
+            tags: ['REASONING'],
+            tagColors: ['bg-indigo-100 text-indigo-700'],
+            standard: { input: 1.25, output: 10.00 },
+            batch: { input: 0.625, output: 5.00 },
+            priority: { input: 2.25, output: 18.00 },
+            context: '1M',
+            free: true,
+            cache: { read: 0.125, store: 4.50 },
+            note: 'Input >200K: $2.50/$15.00'
+        },
+        'gemini-2.5-flash': {
+            name: 'Gemini 2.5 Flash',
+            tags: ['HYBRID'],
+            tagColors: ['bg-cyan-100 text-cyan-700'],
+            standard: { input: 0.30, output: 2.50 },
+            batch: { input: 0.15, output: 1.25 },
+            priority: { input: 0.54, output: 4.50 },
+            context: '1M',
+            free: true,
+            cache: { read: 0.03, store: 1.00 }
+        },
+        'gemini-2.5-flash-lite': {
+            name: 'Gemini 2.5 Flash-Lite',
+            tags: ['CHEAPEST'],
+            tagColors: ['bg-green-100 text-green-700'],
+            standard: { input: 0.10, output: 0.40 },
+            batch: { input: 0.05, output: 0.20 },
+            priority: { input: 0.18, output: 0.72 },
+            context: '1M',
+            free: true,
+            cache: { read: 0.01, store: 1.00 }
+        },
+        'gemini-embedding-2': {
+            name: 'Gemini Embedding 2',
+            tags: ['MULTIMODAL'],
+            tagColors: ['bg-teal-100 text-teal-700'],
+            standard: { input: 0.20, output: 0 },
+            batch: { input: null, output: null },
+            priority: { input: null, output: null },
+            context: '-',
+            free: true,
+            note: 'Image: $0.45/M, Audio: $6.50/M'
+        }
+    };
+
+    const COMPARISON_MODELS = [
+        { provider: 'Google', name: 'Gemini 3.5 Flash', input: 1.50, output: 9.00, icon: '🔵' },
+        { provider: 'Google', name: 'Gemini 3.1 Pro', input: 2.00, output: 12.00, icon: '🔵' },
+        { provider: 'Google', name: 'Gemini 2.5 Pro', input: 1.25, output: 10.00, icon: '🔵' },
+        { provider: 'Google', name: 'Gemini 2.5 Flash', input: 0.30, output: 2.50, icon: '🔵' },
+        { provider: 'Google', name: 'Gemini 2.5 Flash-Lite', input: 0.10, output: 0.40, icon: '🔵' },
+        { provider: 'OpenAI', name: 'GPT-4.1', input: 2.00, output: 8.00, icon: '🟢' },
+        { provider: 'OpenAI', name: 'GPT-4o', input: 2.50, output: 10.00, icon: '🟢' },
+        { provider: 'OpenAI', name: 'GPT-4o-mini', input: 0.15, output: 0.60, icon: '🟢' },
+        { provider: 'OpenAI', name: 'o4 Mini', input: 1.10, output: 4.40, icon: '🟢' },
+        { provider: 'OpenAI', name: 'o3', input: 2.00, output: 8.00, icon: '🟢' },
+        { provider: 'Anthropic', name: 'Claude Sonnet 4.6', input: 3.00, output: 15.00, icon: '🟠' },
+        { provider: 'Anthropic', name: 'Claude Haiku 4.5', input: 1.00, output: 5.00, icon: '🟠' },
+        { provider: 'Anthropic', name: 'Claude Opus 4.7', input: 5.00, output: 25.00, icon: '🟠' },
+    ];
+
+    const PRICING_TABLES = {
+        text: [
+            { model: 'Gemini 3.5 Flash', si: 1.50, so: 9.00, bi: 0.75, bo: 4.50, free: true, ctx: '1M', note: 'Latest flagship' },
+            { model: 'Gemini 3.1 Pro Preview', si: 2.00, so: 12.00, bi: 1.00, bo: 6.00, free: false, ctx: '1M' },
+            { model: 'Gemini 3 Flash Preview', si: 0.50, so: 3.00, bi: 0.25, bo: 1.50, free: true, ctx: '1M' },
+            { model: 'Gemini 3.1 Flash-Lite', si: 0.25, so: 1.50, bi: 0.125, bo: 0.75, free: true, ctx: '1M' },
+            { model: 'Gemini 2.5 Pro', si: 1.25, so: 10.00, bi: 0.625, bo: 5.00, free: true, ctx: '1M' },
+            { model: 'Gemini 2.5 Flash', si: 0.30, so: 2.50, bi: 0.15, bo: 1.25, free: true, ctx: '1M' },
+            { model: 'Gemini 2.5 Flash-Lite', si: 0.10, so: 0.40, bi: 0.05, bo: 0.20, free: true, ctx: '1M' },
+        ],
+        image: [
+            { model: 'Gemini 3.1 Flash Image', si: 0.50, so: '$0.045-0.151/img', bi: 0.25, bo: '$0.023-0.076/img', free: false, ctx: '-' },
+            { model: 'Gemini 3 Pro Image', si: 2.00, so: '$0.134-0.24/img', bi: '-', bo: '$0.067-0.12/img', free: false, ctx: '-' },
+            { model: 'Gemini 2.5 Flash Image', si: 0.30, so: '$0.039/img', bi: 0.15, bo: '$0.020/img', free: false, ctx: '-' },
+            { model: 'Imagen 4 Fast', si: '-', so: '$0.02/img', bi: '-', bo: '-', free: false, ctx: '-' },
+            { model: 'Imagen 4 Standard', si: '-', so: '$0.04/img', bi: '-', bo: '-', free: false, ctx: '-' },
+            { model: 'Imagen 4 Ultra', si: '-', so: '$0.06/img', bi: '-', bo: '-', free: false, ctx: '-' },
+        ],
+        audio: [
+            { model: 'Gemini 3.1 Flash TTS', si: 1.00, so: 20.00, bi: 0.50, bo: 10.00, free: true, ctx: '-' },
+            { model: 'Gemini 2.5 Pro TTS', si: 1.00, so: 20.00, bi: 10.00, bo: '-', free: false, ctx: '-' },
+            { model: 'Gemini 2.5 Flash TTS', si: 0.50, so: 10.00, bi: 0.25, bo: 5.00, free: true, ctx: '-' },
+            { model: 'Gemini 3.1 Flash Live', si: 0.75, so: 4.50, bi: '-', bo: '-', free: true, ctx: '-' },
+            { model: 'Gemini 2.5 Flash Native Audio', si: 0.50, so: 2.00, bi: '-', bo: '-', free: true, ctx: '-' },
+            { model: 'Lyria 3 Clip (30s)', si: '-', so: '$0.04/clip', bi: '-', bo: '-', free: false, ctx: '-' },
+            { model: 'Lyria 3 Pro (full)', si: '-', so: '$0.08/song', bi: '-', bo: '-', free: false, ctx: '-' },
+        ],
+        embedding: [
+            { model: 'Gemini Embedding 2 (text)', si: 0.20, so: '-', bi: '-', bo: '-', free: true, ctx: '-' },
+            { model: 'Gemini Embedding 2 (image)', si: 0.45, so: '-', bi: '-', bo: '-', free: true, ctx: '-' },
+            { model: 'Gemini Embedding 2 (audio)', si: 6.50, so: '-', bi: '-', bo: '-', free: true, ctx: '-' },
+            { model: 'Gemini Embedding 2 (video)', si: 12.00, so: '-', bi: '-', bo: '-', free: true, ctx: '-' },
+            { model: 'Gemini Embedding 1', si: 0.15, so: '-', bi: 0.075, bo: '-', free: true, ctx: '-' },
+        ]
+    };
+
+    const FAQS = [
+        {
+            q: 'What is the cheapest Gemini model?',
+            q_zh: '最便宜的 Gemini 模型是哪个？',
+            a: 'Gemini 2.5 Flash-Lite is the cheapest at $0.10/M input and $0.40/M output tokens. For even more savings, use Batch API pricing which cuts costs by 50% ($0.05/$0.20 per million tokens).',
+            a_zh: 'Gemini 2.5 Flash-Lite 最便宜，输入 $0.10/百万token，输出 $0.40/百万token。使用 Batch API 还能再省 50%（$0.05/$0.20）。'
+        },
+        {
+            q: 'What is the difference between Standard, Batch, and Priority pricing?',
+            q_zh: 'Standard、Batch 和 Priority 定价有什么区别？',
+            a: 'Standard pricing is for real-time requests. Batch pricing offers ~50% discount for non-urgent workloads (results within 24 hours). Priority pricing costs 1.8x more but provides faster response times and higher throughput.',
+            a_zh: 'Standard 用于实时请求。Batch 提供 50% 折扣，但结果在 24 小时内返回。Priority 价格是标准的 1.8 倍，提供更快响应速度和更高吞吐量。'
+        },
+        {
+            q: 'How does Gemini 3.5 Flash compare to GPT-4o?',
+            q_zh: 'Gemini 3.5 Flash 和 GPT-4o 怎么比？',
+            a: 'Gemini 3.5 Flash ($1.50/$9.00) is significantly cheaper than GPT-4o ($2.50/$10.00) — about 40% cheaper for input and 10% for output. Plus, Gemini 3.5 Flash has a 1M context window vs GPT-4o\'s 128K, and includes a free tier.',
+            a_zh: 'Gemini 3.5 Flash ($1.50/$9.00) 比 GPT-4o ($2.50/$10.00) 便宜约 40%（输入）和 10%（输出）。而且 Gemini 3.5 Flash 有 1M 上下文窗口（GPT-4o 只有 128K），还有免费层。'
+        },
+        {
+            q: 'Does the Gemini free tier have any limitations?',
+            q_zh: 'Gemini 免费层有什么限制？',
+            a: 'Yes. Free tier requests may have rate limits, lower throughput, and content may be used to improve Google products. Paid tier requests are not used for training. Some models like Gemini 3.1 Pro Preview do not have a free tier.',
+            a_zh: '有。免费层有速率限制和较低的吞吐量，且内容可能被 Google 用于改进产品。付费层不会被用于训练。部分模型如 Gemini 3.1 Pro Preview 没有免费层。'
+        },
+        {
+            q: 'What are context caching costs?',
+            q_zh: '上下文缓存费用是多少？',
+            a: 'Context caching lets you avoid re-processing repeated prefixes. You pay a small read fee (varies by model) plus a storage fee (~$1.00-$4.50 per million tokens per hour). This can save up to 90% for repeated system prompts or documents.',
+            a_zh: '上下文缓存让你避免重复处理相同的前缀。你只需支付少量读取费（按模型不同）+ 存储费（约 $1.00-$4.50/百万token/小时）。对于重复的 system prompt 或文档，可节省高达 90% 的费用。'
+        },
+        {
+            q: 'How accurate is this calculator?',
+            q_zh: '这个计算器的数据准确吗？',
+            a: 'This calculator uses official pricing from Google AI developer documentation (last updated May 19, 2026). Prices may change. Always verify at ai.google.dev/gemini-api/docs/pricing for the most current rates.',
+            a_zh: '本计算器使用 Google AI 官方文档数据（最后更新 2026 年 5 月 19 日）。价格可能变动，请以 ai.google.dev/gemini-api/docs/pricing 为准。'
+        }
+    ];
+
+    // ==================== STATE ====================
+    let currentTier = 'standard';
+    let lang = 'en';
+
+    // ==================== FUNCTIONS ====================
+    function formatCost(n) {
+        if (n < 0.001) return '< $0.001';
+        if (n < 1) return '$' + n.toFixed(3);
+        if (n < 100) return '$' + n.toFixed(2);
+        return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function formatNumber(n) {
+        if (n >= 1e9) return (n / 1e9).toFixed(1) + 'B';
+        if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+        if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+        return n.toString();
+    }
+
+    function calculate() {
+        const modelId = document.getElementById('modelSelect').value;
+        const model = MODELS[modelId];
+        if (!model) return;
+
+        const inputTokens = parseInt(document.getElementById('inputTokens').value) || 0;
+        const outputTokens = parseInt(document.getElementById('outputTokens').value) || 0;
+        const requests = parseInt(document.getElementById('requests').value) || 0;
+
+        const pricing = model[currentTier] || model.standard;
+        const inputCost = (inputTokens * requests / 1e6) * pricing.input;
+        const outputCost = (outputTokens * requests / 1e6) * pricing.output;
+        const totalCost = inputCost + outputCost;
+        const totalTokensMonth = (inputTokens + outputTokens) * requests;
+        const perReq = requests > 0 ? totalCost / requests : 0;
+
+        // Update display
+        document.getElementById('monthlyCost').textContent = formatCost(totalCost);
+        document.getElementById('monthlyCostDetail').textContent = currentTier.charAt(0).toUpperCase() + currentTier.slice(1) + ' tier';
+        document.getElementById('perRequest').textContent = formatCost(perReq);
+        document.getElementById('totalTokens').textContent = formatNumber(totalTokensMonth);
+        document.getElementById('totalTokensDetail').textContent = (inputTokens + outputTokens) + ' tokens × ' + formatNumber(requests) + ' reqs';
+        document.getElementById('inputCostVal').textContent = formatCost(inputCost);
+        document.getElementById('outputCostVal').textContent = formatCost(outputCost);
+        document.getElementById('inputBar').style.width = totalCost > 0 ? (inputCost / totalCost * 100) + '%' : '0%';
+        document.getElementById('outputBar').style.width = totalCost > 0 ? (outputCost / totalCost * 100) + '%' : '0%';
+        document.getElementById('totalMonthly').textContent = formatCost(totalCost);
+        document.getElementById('annualCost').textContent = formatCost(totalCost * 12);
+
+        // Model info
+        document.getElementById('modelName').textContent = model.name;
+        const tierPricing = model[currentTier] || model.standard;
+        document.getElementById('inputPrice').textContent = '$' + tierPricing.input.toFixed(2) + '/M';
+        document.getElementById('outputPrice').textContent = '$' + tierPricing.output.toFixed(2) + '/M';
+        document.getElementById('contextWindow').textContent = model.context;
+
+        const freeEl = document.getElementById('freeTierInfo');
+        freeEl.textContent = model.free ? '✅ ' + (lang === 'zh' ? '是' : 'Yes') : '❌ ' + (lang === 'zh' ? '否' : 'No');
+        freeEl.className = model.free ? 'font-semibold text-green-600' : 'font-semibold text-red-500';
+
+        // Tags
+        document.getElementById('modelTags').innerHTML = model.tags.map((t, i) =>
+            `<span class="model-tag ${model.tagColors[i]}">${t}</span>`
+        ).join('');
+
+        // Free tier card
+        document.getElementById('freeTierCard').style.display = model.free ? 'block' : 'none';
+
+        // Comparison
+        updateComparison(inputTokens, outputTokens, requests, totalCost);
+    }
+
+    function updateComparison(inputTokens, outputTokens, requests, baseCost) {
+        const tbody = document.getElementById('comparisonBody');
+        tbody.innerHTML = COMPARISON_MODELS.map(m => {
+            const cost = (inputTokens * requests / 1e6) * m.input + (outputTokens * requests / 1e6) * m.output;
+            const savings = baseCost > 0 ? ((baseCost - cost) / baseCost * 100) : 0;
+            const isBase = m.name.includes('3.5 Flash');
+            const savingsText = savings > 0
+                ? `<span class="text-red-500">+${savings.toFixed(0)}%</span>`
+                : savings < 0
+                    ? `<span class="text-green-600 font-semibold">${savings.toFixed(0)}% cheaper</span>`
+                    : `<span class="text-gray-400">—</span>`;
+
+            return `<tr class="comparison-row border-b border-gray-50 ${isBase ? 'bg-blue-50/50' : ''}">
+                <td class="py-2.5 px-2"><span class="mr-1">${m.icon}</span>${m.provider}</td>
+                <td class="py-2.5 px-2 font-medium ${isBase ? 'text-blue-700' : 'text-gray-700'}">${m.name} ${isBase ? '◀' : ''}</td>
+                <td class="py-2.5 px-2 text-right">$${m.input.toFixed(2)}</td>
+                <td class="py-2.5 px-2 text-right">$${m.output.toFixed(2)}</td>
+                <td class="py-2.5 px-2 text-right font-semibold ${isBase ? 'text-blue-700' : 'text-gray-800'}">${formatCost(cost)}</td>
+                <td class="py-2.5 px-2 text-right">${savingsText}</td>
+            </tr>`;
+        }).join('');
+    }
+
+    function setTier(tier) {
+        currentTier = tier;
+        document.querySelectorAll('.tier-btn').forEach(b => {
+            b.className = 'tier-btn p-2 text-xs rounded-lg border-2 border-gray-200 text-gray-600';
+        });
+        const btn = document.getElementById('tier-' + tier);
+        const colors = { standard: 'border-blue-500 bg-blue-50 text-blue-700 font-semibold', batch: 'border-green-500 bg-green-50 text-green-700 font-semibold', priority: 'border-red-500 bg-red-50 text-red-700 font-semibold' };
+        btn.className = `tier-btn p-2 text-xs rounded-lg border-2 ${colors[tier]}`;
+        calculate();
+    }
+
+    function setTokens(type, val) {
+        document.getElementById(type + 'Tokens').value = val;
+        calculate();
+    }
+
+    function setReqs(val) {
+        document.getElementById('requests').value = val;
+        calculate();
+    }
+
+    function switchPricingTab(tab) {
+        ['text', 'image', 'audio', 'embedding'].forEach(t => {
+            document.getElementById('tab-' + t).className = t === tab ? 'tab-active pb-2 text-sm' : 'tab-inactive pb-2 text-sm';
+        });
+        renderPricingTable(tab);
+    }
+
+    function renderPricingTable(tab) {
+        const data = PRICING_TABLES[tab] || [];
+        const tbody = document.getElementById('pricingTableBody');
+        tbody.innerHTML = data.map(r => `<tr class="border-b border-gray-50 hover:bg-gray-50">
+            <td class="py-2 px-2 font-medium text-gray-800">${r.model}</td>
+            <td class="py-2 px-2 text-right">${r.si}</td>
+            <td class="py-2 px-2 text-right">${r.so}</td>
+            <td class="py-2 px-2 text-right text-gray-500">${r.bi}</td>
+            <td class="py-2 px-2 text-right text-gray-500">${r.bo}</td>
+            <td class="py-2 px-2 text-center">${r.free ? '✅' : '❌'}</td>
+            <td class="py-2 px-2 text-center">${r.ctx}</td>
+        </tr>`).join('');
+    }
+
+    // ==================== I18N ====================
+    const I18N = {
+        subtitle: { en: 'Estimate your Google AI API spending — covers Gemini 3.5 Flash, 2.5 Pro, and all models', zh: '估算你的 Google AI API 支出 — 覆盖 Gemini 3.5 Flash、2.5 Pro 及所有模型' },
+        updated: { en: 'Pricing updated: May 19, 2026', zh: '定价更新：2026年5月19日' },
+        calcTitle: { en: '💰 Cost Calculator', zh: '💰 费用计算器' },
+        selectModel: { en: 'Select Model', zh: '选择模型' },
+        selectTier: { en: 'Pricing Tier', zh: '定价层级' },
+        inputTokens: { en: 'Input Tokens (per request)', zh: '输入 Token 数（每次请求）' },
+        outputTokens: { en: 'Output Tokens (per request)', zh: '输出 Token 数（每次请求）' },
+        requests: { en: 'Requests per Month', zh: '每月请求次数' },
+        monthlyCost: { en: 'Monthly Cost', zh: '每月费用' },
+        perRequestCost: { en: 'Cost per Request', zh: '每次请求费用' },
+        totalTokens: { en: 'Total Tokens/Month', zh: '每月总 Token 数' },
+        inputPrice: { en: 'Input Price', zh: '输入价格' },
+        outputPrice: { en: 'Output Price', zh: '输出价格' },
+        contextWindow: { en: 'Context Window', zh: '上下文窗口' },
+        freeTier: { en: 'Free Tier', zh: '免费层' },
+        yes: { en: '✅ Yes', zh: '✅ 是' },
+        no: { en: '❌ No', zh: '❌ 否' },
+        costBreakdown: { en: '📊 Cost Breakdown', zh: '📊 费用明细' },
+        inputCost: { en: 'Input Token Cost', zh: '输入 Token 费用' },
+        outputCost: { en: 'Output Token Cost', zh: '输出 Token 费用' },
+        totalMonthly: { en: 'Total Monthly', zh: '每月总计' },
+        annualCost: { en: 'Annual Cost', zh: '年度费用' },
+        freeTierTip: { en: 'Free Tier Tip', zh: '免费层提示' },
+        freeTierDesc: { en: 'This model has a free tier! You might not need to pay at all. Check the free tier limits and compare with your usage.', zh: '该模型有免费层！你可能完全不需要付费。请检查免费层限制并与你的使用量对比。' },
+        comparisonTitle: { en: '⚡ Cross-Provider Price Comparison', zh: '⚡ 跨供应商价格对比' },
+        comparisonDesc: { en: 'Compare costs for the same workload across different AI providers', zh: '对比相同工作负载在不同 AI 供应商的费用' },
+        provider: { en: 'Provider', zh: '供应商' },
+        model: { en: 'Model', zh: '模型' },
+        monthlyCol: { en: 'Monthly Cost', zh: '每月费用' },
+        savingsCol: { en: 'Savings', zh: '节省' },
+        fullPricingTitle: { en: '📋 Full Gemini Pricing Table (2026)', zh: '📋 Gemini 完整定价表（2026）' },
+        fullPricingDesc: { en: 'Standard pricing for all Gemini models. Prices per million tokens (USD).', zh: '所有 Gemini 模型的标准定价。价格为每百万 token（美元）。' },
+        tabText: { en: 'Text/Multimodal', zh: '文本/多模态' },
+        tabImage: { en: 'Image Generation', zh: '图片生成' },
+        tabAudio: { en: 'Audio/TTS', zh: '音频/语音合成' },
+        tabEmbedding: { en: 'Embedding', zh: '嵌入模型' },
+        tblModel: { en: 'Model', zh: '模型' },
+        faqTitle: { en: '❓ Frequently Asked Questions', zh: '❓ 常见问题' },
+    };
+
+    function toggleLang() {
+        lang = lang === 'en' ? 'zh' : 'en';
+        document.getElementById('langBtn').textContent = lang === 'en' ? '中文' : 'EN';
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            const val = I18N[key];
+            if (val) el.textContent = val[lang] || val.en;
+        });
+        renderFAQ();
+        calculate();
+    }
+
+    function renderFAQ() {
+        const container = document.getElementById('faqContainer');
+        container.innerHTML = FAQS.map((f, i) => {
+            const q = lang === 'zh' ? f.q_zh : f.q;
+            const a = lang === 'zh' ? f.a_zh : f.a;
+            return `<div class="border border-gray-100 rounded-xl overflow-hidden">
+                <button onclick="toggleFAQ(${i})" class="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50">
+                    <span class="font-medium text-gray-800 text-sm">${q}</span>
+                    <svg id="chevron-${i}" class="faq-chevron w-5 h-5 text-gray-400 flex-shrink-0 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <div id="faq-${i}" class="faq-answer px-4 text-sm text-gray-600">${a}</div>
+            </div>`;
+        }).join('');
+    }
+
+    function toggleFAQ(i) {
+        const el = document.getElementById('faq-' + i);
+        const chevron = document.getElementById('chevron-' + i);
+        el.classList.toggle('open');
+        chevron.classList.toggle('open');
+    }
+
+    // ==================== INIT ====================
+    document.addEventListener('DOMContentLoaded', () => {
+        renderPricingTable('text');
+        renderFAQ();
+        calculate();
+    });
+    </script>
+</body>
+</html>
