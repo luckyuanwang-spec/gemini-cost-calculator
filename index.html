@@ -48,6 +48,30 @@
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
     }
     </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            { "@type": "Question", "name": "What is the cheapest Gemini model?", "acceptedAnswer": { "@type": "Answer", "text": "Gemini 2.5 Flash-Lite is the cheapest at $0.10 per million input tokens and $0.40 per million output tokens. With Batch API, costs drop 50% further to $0.05/$0.20 per million." }},
+            { "@type": "Question", "name": "How much does Gemini 3.5 Flash cost per million tokens?", "acceptedAnswer": { "@type": "Answer", "text": "Gemini 3.5 Flash costs $1.50 per million input tokens and $9.00 per million output tokens at Standard tier. Batch pricing is $0.75/$4.50. It's about 40% cheaper on input than GPT-4o." }},
+            { "@type": "Question", "name": "How does Gemini pricing compare to OpenAI GPT-4o?", "acceptedAnswer": { "@type": "Answer", "text": "Gemini 3.5 Flash ($1.50/$9.00 per million tokens) is about 40% cheaper on input and 10% cheaper on output than GPT-4o ($2.50/$10.00). Gemini 2.5 Flash is even cheaper at $0.80/$3.20 with comparable quality." }},
+            { "@type": "Question", "name": "What is the difference between Standard, Batch, and Priority pricing?", "acceptedAnswer": { "@type": "Answer", "text": "Standard pricing is for real-time requests. Batch offers ~50% discount for non-urgent workloads (results within 24 hours). Priority costs 1.8x more for faster response times and higher throughput." }},
+            { "@type": "Question", "name": "Does the Gemini API have a free tier?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Many Gemini models offer a free tier with generous rate limits. Gemini 2.5 Flash provides 1,500 free requests per day. Free tier content may be used by Google to improve products, unlike paid tier." }},
+            { "@type": "Question", "name": "How can I calculate my monthly Gemini API costs?", "acceptedAnswer": { "@type": "Answer", "text": "Use the Gemini API Cost Calculator on this page. Enter your estimated input/output tokens per request, number of monthly requests, and select your model to get an instant monthly cost estimate. You can compare across different models and providers." }}
+        ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://gemini-cost-calculator.vercel.app/" },
+            { "@type": "ListItem", "position": 2, "name": "Gemini API Cost Calculator", "item": "https://gemini-cost-calculator.vercel.app/" }
+        ]
+    }
+    </script>
 </head>
 <body class="bg-gray-50 min-h-screen">
 
@@ -297,6 +321,32 @@
             </div>
         </div>
 
+        <!-- How to Use Guide -->
+        <div class="bg-white rounded-2xl p-6 card-glow mb-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">📖 How to Use This Gemini API Cost Calculator</h2>
+            <div class="prose max-w-none text-sm text-gray-600 space-y-3">
+                <p>Estimating your <strong>Google Gemini API costs</strong> is straightforward with this tool. Whether you're building an AI application, integrating a chatbot, or just exploring Google's AI models, understanding the pricing upfront helps you budget effectively.</p>
+                <div class="grid md:grid-cols-3 gap-4 mt-4">
+                    <div class="bg-blue-50 rounded-xl p-4">
+                        <div class="text-lg mb-1">1️⃣</div>
+                        <div class="font-semibold text-gray-800 text-sm mb-1">Select Your Model</div>
+                        <p class="text-xs text-gray-500">Choose from <strong>Gemini 3.5 Flash</strong>, <strong>2.5 Pro</strong>, <strong>2.5 Flash</strong>, or any other model. Each has different pricing and capabilities — hover over model names to see details.</p>
+                    </div>
+                    <div class="bg-green-50 rounded-xl p-4">
+                        <div class="text-lg mb-1">2️⃣</div>
+                        <div class="font-semibold text-gray-800 text-sm mb-1">Enter Token Counts</div>
+                        <p class="text-xs text-gray-500">Input the number of <strong>input tokens</strong> (your prompt) and <strong>output tokens</strong> (model response) per request. Typical chat turns use 500-2,000 tokens.</p>
+                    </div>
+                    <div class="bg-purple-50 rounded-xl p-4">
+                        <div class="text-lg mb-1">3️⃣</div>
+                        <div class="font-semibold text-gray-800 text-sm mb-1">Set Monthly Volume</div>
+                        <p class="text-xs text-gray-500">Enter your expected <strong>requests per month</strong>. The calculator instantly shows your estimated monthly bill, cost per request, and total tokens.</p>
+                    </div>
+                </div>
+                <p class="mt-4">For cost optimization: switch to <strong>Batch pricing</strong> for non-urgent workloads (50% cheaper), use smaller models like <strong>Gemini 2.5 Flash-Lite</strong> for simple tasks, and leverage the <strong>free tier</strong> for prototyping. Compare costs across Gemini, OpenAI, and Anthropic using the cross-provider comparison table.</p>
+            </div>
+        </div>
+
         <!-- FAQ -->
         <div class="bg-white rounded-2xl p-6 card-glow mb-10">
             <h2 class="text-xl font-bold text-gray-800 mb-6" data-i18n="faqTitle">❓ Frequently Asked Questions</h2>
@@ -304,6 +354,47 @@
         </div>
 
     </main>
+
+    <!-- More Free Developer Tools -->
+    <section class="max-w-6xl mx-auto px-4 py-8 mb-6">
+        <div class="bg-white rounded-2xl p-6 card-glow">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">🛠️ More Free Developer Tools</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                <a href="https://ai-token-counter.vercel.app/" class="p-3 bg-gray-50 hover:bg-blue-50 rounded-xl transition group">
+                    <div class="font-medium text-gray-700 group-hover:text-blue-700">AI Token Counter</div>
+                    <div class="text-xs text-gray-400">Count tokens for GPT, Claude & Gemini</div>
+                </a>
+                <a href="https://json-formatter.vercel.app/" class="p-3 bg-gray-50 hover:bg-blue-50 rounded-xl transition group">
+                    <div class="font-medium text-gray-700 group-hover:text-blue-700">JSON Formatter</div>
+                    <div class="text-xs text-gray-400">Format, validate & beautify JSON</div>
+                </a>
+                <a href="https://base64-tool.vercel.app/" class="p-3 bg-gray-50 hover:bg-blue-50 rounded-xl transition group">
+                    <div class="font-medium text-gray-700 group-hover:text-blue-700">Base64 Tool</div>
+                    <div class="text-xs text-gray-400">Encode & decode Base64 strings</div>
+                </a>
+                <a href="https://uuid-generator.vercel.app/" class="p-3 bg-gray-50 hover:bg-blue-50 rounded-xl transition group">
+                    <div class="font-medium text-gray-700 group-hover:text-blue-700">UUID Generator</div>
+                    <div class="text-xs text-gray-400">Generate UUID v4 & v7</div>
+                </a>
+                <a href="https://cron-generator.vercel.app/" class="p-3 bg-gray-50 hover:bg-blue-50 rounded-xl transition group">
+                    <div class="font-medium text-gray-700 group-hover:text-blue-700">Cron Generator</div>
+                    <div class="text-xs text-gray-400">Build & parse cron expressions</div>
+                </a>
+                <a href="https://slug-generator.vercel.app/" class="p-3 bg-gray-50 hover:bg-blue-50 rounded-xl transition group">
+                    <div class="font-medium text-gray-700 group-hover:text-blue-700">Slug Generator</div>
+                    <div class="text-xs text-gray-400">URL-friendly string generator</div>
+                </a>
+                <a href="https://timestamp-converter.vercel.app/" class="p-3 bg-gray-50 hover:bg-blue-50 rounded-xl transition group">
+                    <div class="font-medium text-gray-700 group-hover:text-blue-700">Timestamp Converter</div>
+                    <div class="text-xs text-gray-400">Unix timestamp ↔ date converter</div>
+                </a>
+                <a href="https://day-calculator.vercel.app/" class="p-3 bg-gray-50 hover:bg-blue-50 rounded-xl transition group">
+                    <div class="font-medium text-gray-700 group-hover:text-blue-700">Day Calculator</div>
+                    <div class="text-xs text-gray-400">Business days, date difference & countdown</div>
+                </a>
+            </div>
+        </div>
+    </section>
 
     <!-- Footer -->
     <footer class="bg-gray-800 text-gray-400 py-8">
@@ -497,6 +588,30 @@
             q_zh: '这个计算器的数据准确吗？',
             a: 'This calculator uses official pricing from Google AI developer documentation (last updated May 19, 2026). Prices may change. Always verify at ai.google.dev/gemini-api/docs/pricing for the most current rates.',
             a_zh: '本计算器使用 Google AI 官方文档数据（最后更新 2026 年 5 月 19 日）。价格可能变动，请以 ai.google.dev/gemini-api/docs/pricing 为准。'
+        },
+        {
+            q: 'How do you calculate Gemini API cost per request?',
+            q_zh: '如何计算每次 Gemini API 请求的费用？',
+            a: 'Multiply input tokens by input price per token, then add output tokens multiplied by output price. Example: 1,000 input tokens × $0.0000015 + 500 output tokens × $0.000009 = $0.006 per request for Gemini 3.5 Flash. Use the calculator above for instant estimates.',
+            a_zh: '将输入 token 数乘以单价，加上输出 token 数乘以输出单价。例如：1000 输入 token × $0.0000015 + 500 输出 token × $0.000009 = 每次请求 $0.006（Gemini 3.5 Flash）。用上方计算器可即时估算。'
+        },
+        {
+            q: 'Which Gemini model has the best price-performance ratio?',
+            q_zh: '哪个 Gemini 模型性价比最高？',
+            a: 'Gemini 2.5 Flash offers the best balance at $0.80/M input and $3.20/M output tokens. It handles most tasks well — coding, analysis, creative writing — at a fraction of the cost of top-tier models. For maximum savings, use 2.5 Flash-Lite ($0.10/$0.40) for simpler tasks.',
+            a_zh: 'Gemini 2.5 Flash 性价比最高，输入 $0.80/百万 token，输出 $3.20/百万 token。它处理编程、分析、写作等任务表现优秀，价格远低于旗舰模型。简单任务可用 2.5 Flash-Lite ($0.10/$0.40) 进一步节省。'
+        },
+        {
+            q: 'How many free Gemini API requests can I make per day?',
+            q_zh: '每天可以免费调用多少次 Gemini API？',
+            a: 'Gemini 2.5 Flash provides 1,500 free requests per day, and Gemini 2.5 Flash-Lite offers 1,500 requests/day. Gemini 2.5 Pro has 50 free requests/day. Free tier is great for prototyping and small projects.',
+            a_zh: 'Gemini 2.5 Flash 每天 1,500 次免费请求，2.5 Flash-Lite 也是 1,500 次/天，2.5 Pro 有 50 次/天免费额度。免费层适合原型开发和小项目。'
+        },
+        {
+            q: 'Gemini API cost comparison: Gemini vs OpenAI vs Claude',
+            q_zh: 'Gemini API 费用对比：Gemini vs OpenAI vs Claude',
+            a: 'At small scale (100K requests/month with 1K input/500 output tokens): Gemini 2.5 Flash costs ~$70/month, GPT-4o Mini ~$22/month, Claude Haiku ~$31/month. At large scale (10M requests/month): Gemini 2.5 Flash ~$7,000/month, GPT-4o Mini ~$2,190/month. Use the comparison table above for custom calculations.',
+            a_zh: '小规模（月 10 万请求，1K 输入/500 输出 token）：Gemini 2.5 Flash ~$70/月，GPT-4o Mini ~$22/月，Claude Haiku ~$31/月。大规模（月 1000 万请求）：Gemini 2.5 Flash ~$7,000/月，GPT-4o Mini ~$2,190/月。详细对比请使用上方表格自定义计算。'
         }
     ];
 
